@@ -7,7 +7,7 @@
 ## X-Category: Development Tools
 ## X-Website: https://www.curseforge.com/wow/addons/addon-doktor
 ## X-Curse-Project-ID: 1797380
-## Version: 0.9.3-beta
+## Version: 0.9.4-beta
 ## SavedVariables: AddonDoktorDB
 ## SavedVariablesPerCharacter: AddonDoktorCharDB
 ## IconTexture: Interface\Icons\INV_Misc_Bandage_15

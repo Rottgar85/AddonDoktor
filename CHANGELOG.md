@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.9.3-beta
+## 0.9.4-beta
 - Updates kommen jetzt automatisch über GitHub auf CurseForge
 - Datenbank-Updates erscheinen künftig regelmäßig als eigene kleine Versionen
 
