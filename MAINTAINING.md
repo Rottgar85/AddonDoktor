@@ -8,4 +8,4 @@ Ablauf:
 3. Nur eindeutige Fälle eintragen. Im Zweifel weglassen – die automatische Erkennung über Stichwörter fängt viel ab.
 4. `ns.DataVersion` auf das heutige Datum setzen.
 5. In `CHANGELOG.md` einen Eintrag "Datenbank-Update JJJJ-MM-TT: +N Addons" ergänzen und die Patch-Nummer in der .toc erhöhen.
-6. Struktur prüfen (alle Klammern geschlossen), committen und auf `main` pushen. Keinen Tag setzen: GitHub erkennt die neue Version in der .toc, legt den Tag selbst an und lädt das Paket automatisch auf CurseForge hoch.
+6. Tests ausführen: `sh tests/run.sh` (Lua-Syntax aller Dateien + Ablauf mit nachgebauter WoW-API, nutzt lua oder luatex). Nur bei „Ergebnis: 20/20“ in allen vier Durchläufen weitermachen. Danach committen und auf `main` pushen. Keinen Tag setzen: GitHub erkennt die neue Version in der .toc, legt den Tag selbst an und lädt das Paket automatisch auf CurseForge hoch.

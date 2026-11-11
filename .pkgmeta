@@ -3,6 +3,7 @@ enable-nolib-creation: no
 ignore:
   - README.md
   - MAINTAINING.md
+  - tests
   - .github
 manual-changelog:
   filename: CHANGELOG.md
