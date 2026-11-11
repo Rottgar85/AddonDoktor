@@ -10,7 +10,7 @@
 ## Version: 0.9.4-beta
 ## SavedVariables: AddonDoktorDB
 ## SavedVariablesPerCharacter: AddonDoktorCharDB
-## IconTexture: Interface\Icons\INV_Misc_Bandage_15
+## IconTexture: Interface\AddOns\AddonDoktor\Media\Logo64
 ## AddonCompartmentFunc: AddonDoktor_OnCompartmentClick
 
 Locales\enUS.lua

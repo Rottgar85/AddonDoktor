@@ -83,10 +83,66 @@ end
 ------------------------------------------------------------------------
 -- Hilfsfunktionen
 ------------------------------------------------------------------------
-local function MakeButton(parent, text, width)
-    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+-- Stil: dunkel, flach, Akzentfarbe aus dem Logo (Türkis)
+local LOGO = "Interface\\AddOns\\AddonDoktor\\Media\\Logo128"
+local C = {
+    bg      = { 0.05, 0.08, 0.12, 0.97 },
+    header  = { 0.07, 0.11, 0.16, 1 },
+    panel   = { 0.09, 0.13, 0.18, 0.95 },
+    border  = { 0.16, 0.22, 0.29, 1 },
+    accent  = { 0.12, 0.82, 0.68, 1 },
+    button  = { 0.12, 0.17, 0.23, 1 },
+    hover   = { 0.16, 0.24, 0.31, 1 },
+}
+UI.COLORS, UI.LOGO = C, LOGO
+
+-- Hintergrund + 1-Pixel-Rahmen ohne Vorlagen (läuft in jeder Client-Version)
+local function Skin(f, bg, border)
+    f.bg = rawget(f, "bg") or f:CreateTexture(nil, "BACKGROUND", nil, -8)
+    f.bg:SetAllPoints()
+    f.bg:SetColorTexture(unpack(bg or C.panel))
+    local b = border or C.border
+    local edges = {
+        { "TOPLEFT", "TOPRIGHT", nil, 1 }, { "BOTTOMLEFT", "BOTTOMRIGHT", nil, 1 },
+        { "TOPLEFT", "BOTTOMLEFT", 1, nil }, { "TOPRIGHT", "BOTTOMRIGHT", 1, nil },
+    }
+    f.edges = rawget(f, "edges") or {}
+    for i, e in ipairs(edges) do
+        local t = f.edges[i] or f:CreateTexture(nil, "BORDER")
+        t:ClearAllPoints()
+        t:SetPoint(e[1]); t:SetPoint(e[2])
+        if e[3] then t:SetWidth(e[3]) else t:SetHeight(e[4]) end
+        t:SetColorTexture(unpack(b))
+        f.edges[i] = t
+    end
+    return f
+end
+UI.Skin = Skin
+
+local function NewPanel(parent)
+    return Skin(CreateFrame("Frame", nil, parent))
+end
+
+local function MakeButton(parent, text, width, accent)
+    local button = CreateFrame("Button", nil, parent)
     button:SetSize(width or 100, 22)
+    Skin(button, accent and { C.accent[1] * 0.55, C.accent[2] * 0.55, C.accent[3] * 0.55, 1 } or C.button,
+        accent and C.accent or C.border)
+    local fs = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    fs:SetPoint("CENTER")
+    button:SetFontString(fs)
+    button.label = fs
     button:SetText(text)
+    button:SetScript("OnEnter", function(self)
+        if self:IsEnabled() and not self.active then self.bg:SetColorTexture(unpack(C.hover)) end
+    end)
+    button:SetScript("OnLeave", function(self)
+        if not self.active then
+            self.bg:SetColorTexture(unpack(accent and { C.accent[1] * 0.55, C.accent[2] * 0.55, C.accent[3] * 0.55, 1 } or C.button))
+        end
+    end)
+    button:SetScript("OnDisable", function(self) fs:SetTextColor(0.45, 0.5, 0.55) end)
+    button:SetScript("OnEnable", function(self) fs:SetTextColor(1, 1, 1) end)
     return button
 end
 
@@ -109,7 +165,8 @@ end
 -- Grundfenster mit Tabs und Neulade-Leiste
 ------------------------------------------------------------------------
 local function CreateMainFrame()
-    frame = ns.CreateFrameSafe("Frame", "AddonDoktorFrame", UIParent, "BasicFrameTemplateWithInset", "BasicFrameTemplate")
+    frame = CreateFrame("Frame", "AddonDoktorFrame", UIParent)
+    Skin(frame, C.bg, C.border)
     frame:SetSize(WIDTH, HEIGHT)
     frame:SetPoint("CENTER")
     frame:SetMovable(true)
@@ -122,30 +179,50 @@ local function CreateMainFrame()
     frame:Hide()
     tinsert(UISpecialFrames, "AddonDoktorFrame") -- mit ESC schließbar
 
-    frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    frame.title:SetPoint("TOP", 0, -5)
-    frame.title:SetText(L["TITLE"] .. "  |cff888888v" .. ns.version .. "|r")
+    -- Kopfzeile mit Logo, Titel und Schließen-Knopf
+    local header = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
+    header:SetPoint("TOPLEFT", 1, -1); header:SetPoint("TOPRIGHT", -1, -1); header:SetHeight(40)
+    header:SetColorTexture(unpack(C.header))
+    local line = frame:CreateTexture(nil, "ARTWORK")
+    line:SetPoint("TOPLEFT", header, "BOTTOMLEFT"); line:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT"); line:SetHeight(2)
+    line:SetColorTexture(unpack(C.accent))
+    frame.logo = frame:CreateTexture(nil, "ARTWORK")
+    frame.logo:SetTexture(LOGO)
+    frame.logo:SetSize(30, 30)
+    frame.logo:SetPoint("LEFT", header, "LEFT", 8, 0)
+    frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    frame.title:SetPoint("LEFT", frame.logo, "RIGHT", 8, 0)
+    frame.title:SetText("|cffffffff" .. L["TITLE"] .. "|r  |cff1fd1adv" .. ns.version .. "|r")
+    local close = MakeButton(frame, "×", 24)
+    close:SetPoint("RIGHT", header, "RIGHT", -8, 0)
+    close.label:SetFontObject("GameFontNormalLarge")
+    close:SetScript("OnClick", function() frame:Hide() end)
 
     local tabNames = { { "overview", L["TAB_OVERVIEW"] }, { "addons", L["TAB_ADDONS"] }, { "profiles", L["TAB_PROFILES"] }, { "settings", L["TAB_SETTINGS"] } }
     for i, info in ipairs(tabNames) do
         local tab = MakeButton(frame, info[2], 104)
-        tab:SetPoint("TOPLEFT", 12 + (i - 1) * 106, -30)
+        tab:SetHeight(26)
+        tab:SetPoint("TOPLEFT", 12 + (i - 1) * 108, -52)
+        tab.underline = tab:CreateTexture(nil, "OVERLAY")
+        tab.underline:SetPoint("BOTTOMLEFT", 1, 1); tab.underline:SetPoint("BOTTOMRIGHT", -1, 1); tab.underline:SetHeight(2)
+        tab.underline:SetColorTexture(unpack(C.accent))
         tab:SetScript("OnClick", function() UI.ShowTab(info[1]) end)
         tabs[info[1]] = tab
     end
 
-    local rescan = MakeButton(frame, L["RESCAN"], 100)
-    rescan:SetPoint("TOPRIGHT", -12, -30)
+    local rescan = MakeButton(frame, L["RESCAN"], 100, true)
+    rescan:SetHeight(26)
+    rescan:SetPoint("TOPRIGHT", -12, -52)
     rescan:SetScript("OnClick", function() ns.RunDiagnosis() end)
 
     -- Neulade-Leiste unten, nur sichtbar bei offenen Änderungen
-    local bar = ns.CreateFrameSafe("Frame", nil, frame, "InsetFrameTemplate3", "InsetFrameTemplate")
+    local bar = NewPanel(frame)
     bar:SetPoint("BOTTOMLEFT", 8, 8)
     bar:SetPoint("BOTTOMRIGHT", -8, 8)
     bar:SetHeight(34)
     bar.text = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     bar.text:SetPoint("LEFT", 10, 0)
-    bar.reload = MakeButton(bar, L["BTN_RELOAD"], 130)
+    bar.reload = MakeButton(bar, L["BTN_RELOAD"], 130, true)
     bar.reload:SetPoint("RIGHT", -6, 0)
     bar.reload:SetScript("OnClick", function()
         if InCombatLockdown() then ns.Print(L["IN_COMBAT"]) return end
@@ -158,7 +235,7 @@ local function CreateMainFrame()
 
     for _, key in ipairs({ "overview", "addons", "profiles", "settings" }) do
         local panel = CreateFrame("Frame", nil, frame)
-        panel:SetPoint("TOPLEFT", 12, -60)
+        panel:SetPoint("TOPLEFT", 12, -88)
         panel:SetPoint("BOTTOMRIGHT", -12, 48)
         panels[key] = panel
     end
@@ -185,12 +262,12 @@ local function CreateOverview()
     p.note:SetPoint("BOTTOMLEFT", 8, 0)
 
     for i = 1, MAX_CARDS do
-        local card = ns.CreateFrameSafe("Frame", nil, p, "InsetFrameTemplate3", "InsetFrameTemplate")
+        local card = NewPanel(p)
         card:SetSize(WIDTH - 36, 52)
         card:SetPoint("TOPLEFT", 4, -90 - (i - 1) * 56)
         card.stripe = card:CreateTexture(nil, "ARTWORK")
-        card.stripe:SetPoint("TOPLEFT", 3, -3)
-        card.stripe:SetPoint("BOTTOMLEFT", 3, 3)
+        card.stripe:SetPoint("TOPLEFT", 1, -1)
+        card.stripe:SetPoint("BOTTOMLEFT", 1, 1)
         card.stripe:SetWidth(4)
         card.text = card:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         card.text:SetPoint("LEFT", 14, 0)
@@ -301,7 +378,7 @@ local function CreateAddonsPanel()
         row:EnableMouse(true)
         row.highlight = row:CreateTexture(nil, "BACKGROUND")
         row.highlight:SetAllPoints()
-        row.highlight:SetColorTexture(1, 1, 1, i % 2 == 0 and 0.04 or 0)
+        row.highlight:SetColorTexture(1, 1, 1, i % 2 == 0 and 0.035 or 0)
 
         row.check = CreateFrame("CheckButton", nil, row, "UICheckButtonTemplate")
         row.check:SetSize(20, 20)
@@ -374,7 +451,7 @@ local function CreateProfilesPanel()
     p.help:SetText(L["PROFILES_HELP"])
 
     for i, situation in ipairs(ns.Profiles.SITUATIONS) do
-        local row = ns.CreateFrameSafe("Frame", nil, p, "InsetFrameTemplate3", "InsetFrameTemplate")
+        local row = NewPanel(p)
         row:SetSize(WIDTH - 36, 74)
         row:SetPoint("TOPLEFT", 0, -48 - (i - 1) * 80)
         row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -480,7 +557,12 @@ end
 
 function UI.ShowTab(name)
     for key, panel in pairs(panels) do panel:SetShown(key == name) end
-    for key, tab in pairs(tabs) do tab:SetEnabled(key ~= name) end -- aktiver Tab ist "gedrückt"
+    for key, tab in pairs(tabs) do
+        tab.active = key == name
+        tab.underline:SetShown(tab.active)
+        tab.bg:SetColorTexture(unpack(tab.active and C.hover or C.button))
+        tab.label:SetTextColor(tab.active and C.accent[1] or 0.8, tab.active and C.accent[2] or 0.85, tab.active and C.accent[3] or 0.9)
+    end
     UI.Refresh()
 end
 
