@@ -1,12 +1,16 @@
-# Baut bei jedem Versions-Tag (z. B. v0.9.2-beta) automatisch das Paket
-# und lädt es auf CurseForge hoch. Benötigt das Secret CF_API_KEY im GitHub-Repository
-# und die Zeile "## X-Curse-Project-ID: <ID>" in der .toc.
+# Veröffentlicht automatisch auf CurseForge, sobald sich die Version in der .toc ändert.
+# Ablauf: Version aus "## Version:" lesen -> Tag v<Version> anlegen (falls neu) -> Paket bauen und hochladen.
+# Benötigt das Secret CF_API_KEY und "## X-Curse-Project-ID" in der .toc.
 name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
+    paths: [AddonDoktor.toc]
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   release:
@@ -18,4 +22,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: BigWigsMods/packager@v2
+
+      - name: Version lesen und Tag anlegen
+        id: version
+        run: |
+          VERSION=$(grep -m1 '^## Version:' AddonDoktor.toc | sed 's/^## Version:[[:space:]]*//' | tr -d '\r')
+          echo "Version: $VERSION"
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION gibt es schon – nichts zu veröffentlichen."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "Rottgar"
+            git config user.email "Rottgar85@users.noreply.github.com"
+            git tag "v$VERSION"
+            git push origin "v$VERSION"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Paket bauen und auf CurseForge hochladen
+        if: steps.version.outputs.skip == 'false'
+        uses: BigWigsMods/packager@v2

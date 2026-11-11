@@ -8,4 +8,4 @@ Ablauf:
 3. Nur eindeutige Fälle eintragen. Im Zweifel weglassen – die automatische Erkennung über Stichwörter fängt viel ab.
 4. `ns.DataVersion` auf das heutige Datum setzen.
 5. In `CHANGELOG.md` einen Eintrag "Datenbank-Update JJJJ-MM-TT: +N Addons" ergänzen und die Patch-Nummer in der .toc erhöhen.
-6. Struktur prüfen (alle Klammern geschlossen), committen, Tag `vX.Y.Z-beta` setzen und pushen. GitHub baut und lädt das Paket automatisch auf CurseForge hoch.
+6. Struktur prüfen (alle Klammern geschlossen), committen und auf `main` pushen. Keinen Tag setzen: GitHub erkennt die neue Version in der .toc, legt den Tag selbst an und lädt das Paket automatisch auf CurseForge hoch.
