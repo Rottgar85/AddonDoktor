@@ -1,4 +1,4 @@
-## Interface: 16001, 120100, 120105, 50504, 20506, 11509
+## Interface: 16001
 ## Title: Addon-Doktor
 ## Notes: Checks your addon setup: duplicate addons, outdated addons, performance hogs, situation profiles.
 ## Notes-deDE: Diagnose für dein Addon-Setup: doppelte Addons, veraltete Addons, Leistungsfresser.
