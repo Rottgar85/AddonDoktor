@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.5-beta
+- Neues Logo – auch am Minimap-Knopf, in der Addon-Liste und in der Titelleiste
+- Neues dunkles, modernes Fenster-Design mit eigenen Tabs und Knöpfen
+
 ## 0.9.4-beta
 - Updates kommen jetzt automatisch über GitHub auf CurseForge
 - Datenbank-Updates erscheinen künftig regelmäßig als eigene kleine Versionen
