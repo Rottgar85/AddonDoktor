@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.3-beta
+- Updates kommen jetzt automatisch über GitHub auf CurseForge
+- Datenbank-Updates erscheinen künftig regelmäßig als eigene kleine Versionen
+
 ## 0.9.2-beta
 - Automatische Erkennung: Addons, die nicht in der Datenbank stehen, werden über Titel, Beschreibung und Kategorie aus der .toc einsortiert
 - Automatisch erkannte Überschneidungen zählen weniger stark in die Note
