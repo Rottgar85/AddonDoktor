@@ -1,0 +1,26 @@
+## Interface: 16001, 120100, 120105, 50504, 20506, 11509
+## Title: Addon-Doktor
+## Notes: Checks your addon setup: duplicate addons, outdated addons, performance hogs, situation profiles.
+## Notes-deDE: Diagnose für dein Addon-Setup: doppelte Addons, veraltete Addons, Leistungsfresser.
+## Author: Rottgar
+## X-License: MIT
+## X-Category: Development Tools
+## X-Website: https://www.curseforge.com/wow/addons/addon-doktor
+## X-Curse-Project-ID: 1797380
+## Version: 0.9.2-beta
+## SavedVariables: AddonDoktorDB
+## SavedVariablesPerCharacter: AddonDoktorCharDB
+## IconTexture: Interface\Icons\INV_Misc_Bandage_15
+## AddonCompartmentFunc: AddonDoktor_OnCompartmentClick
+
+Locales\enUS.lua
+Locales\deDE.lua
+Core.lua
+Data\Categories.lua
+Scanner.lua
+Profiler.lua
+Rules.lua
+Profiles.lua
+UI\MainFrame.lua
+UI\Minimap.lua
+UI\Settings.lua

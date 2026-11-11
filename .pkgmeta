@@ -1,0 +1,6 @@
+package-as: AddonDoktor
+enable-nolib-creation: no
+ignore:
+  - README.md
+  - MAINTAINING.md
+  - .github
