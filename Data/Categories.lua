@@ -6,7 +6,7 @@
 -- STARTSET – Ordnernamen werden mit echten Addons abgeglichen und regelmäßig erweitert.
 local addonName, ns = ...
 
-ns.DataVersion = "2026-11-11"  -- Stand der Datenbank, wird bei jedem Daten-Update erhöht
+ns.DataVersion = "2026-11-22"  -- Stand der Datenbank, wird bei jedem Daten-Update erhöht
 
 -- exclusive = true: zwei Addons dieser Kategorie gleichzeitig sind fast immer doppelt
 -- builtin   = Name einer Funktion, die Forever schon eingebaut hat
@@ -19,7 +19,7 @@ ns.Categories = {
     ui_suite = {
         de = "komplette UI-Suiten", en = "full UI suite", exclusive = true,
         keywords = { "ui suite", "interface replacement", "complete ui", "full ui", "ui-suite", "komplette ui" },
-        patterns = { "^elvui", "ellesmereui", "foreverui", "daylightui", "melloui", "luckyoneui" },
+        patterns = { "^elvui", "ellesmereui", "foreverui", "daylightui", "melloui", "luckyoneui", "wowforeversuite" },
     },
     bags = {
         de = "Taschen-Addons", en = "bag addon", exclusive = true,

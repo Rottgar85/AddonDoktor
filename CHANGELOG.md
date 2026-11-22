@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.6-beta
+- Datenbank-Update 2026-11-22: +1 Addons (WoW Forever Suite)
+
 ## 0.9.5-beta
 - Neues Logo – auch am Minimap-Knopf, in der Addon-Liste und in der Titelleiste
 - Neues dunkles, modernes Fenster-Design mit eigenen Tabs und Knöpfen
